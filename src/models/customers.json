@@ -1,0 +1,36 @@
+[
+    {
+        "id_customer": "9160150d-202f-4024-a884-084968e0048f",
+        "rut": "12.008.009-1",
+        "name": "Juanito Alcachofa",
+        "age": 62,
+        "phoneNumber": "+5697777888",
+        "email": "eljuanito@gmail.com",
+        "accounts": [
+            {
+                "id_account": "db16dde1-97f3-4e39-8143-85007e5061a8",
+                "balance": 0,
+                "type": "cuenta rut",
+                "cuote": 300,
+                "isBlocked": false
+            }
+        ]
+    },
+    {
+        "id_customer": "9160150d-202f-4024-a884-084968e00480",
+        "rut": "12.800.900-1",
+        "name": "Juanita Alpaca",
+        "age": 62,
+        "phoneNumber": "+5697777888",
+        "email": "lajuanita@gmail.com",
+        "accounts": [
+            {
+                "id_account": "db16dde1-97f3-4e39-8143-85007e5061a0",
+                "balance": 0,
+                "type": "cuenta rut",
+                "cuote": 300,
+                "isBlocked": false
+            }
+        ]
+    }
+]
