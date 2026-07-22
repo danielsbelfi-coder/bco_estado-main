@@ -1,0 +1,128 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    color: #222;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+h1 {
+    margin-bottom: 1rem;
+}
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+button {
+    padding: 0.75rem 1rem;
+    border: none;
+    background: #0066cc;
+    color: white;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: background 0.2s ease;
+}
+
+button:hover {
+    background: #0052a3;
+}
+
+#create-customer-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+}
+
+#create-customer-form input,
+#create-customer-form select {
+    padding: 0.6rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    min-width: 170px;
+}
+
+#create-customer-form button {
+    margin-top: 8px;
+    padding: 10px 18px;
+}
+
+#results {
+    margin-top: 2rem;
+}
+
+.card {
+    width: 100%;
+    max-width: 700px;
+    background: white;
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card h2 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+}
+
+.card p {
+    margin: 0.35rem 0;
+}
+
+.card ul {
+    padding-left: 1.5rem;
+    margin-top: 0.75rem;
+    margin-bottom: 1rem;
+}
+
+.card li {
+    margin-bottom: 0.75rem;
+}
+
+.card button {
+    margin-top: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.account-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.account-actions select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.delete-customer-btn {
+    background: crimson;
+}
+
+.delete-customer-btn:hover {
+    background: #b01030;
+}
+
+.delete-account-btn {
+    background: #e67e22;
+    margin-left: 0.75rem;
+}
+
+.delete-account-btn:hover {
+    background: #ca6a16;
+}

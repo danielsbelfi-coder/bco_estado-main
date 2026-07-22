@@ -16,7 +16,7 @@ router.get("/rut-accounts", getCustomersWithRutAccount)
 router.post("/", createCustomer)
 router.get("/:id", findCustomer)
 router.post("/:id/accounts", addAccountToCustomer)
-router.delete("/:id/accounts/:id_account", deleteAccountFromCustomer)
+router.delete("/:id_customer/accounts/:id_account", deleteAccountFromCustomer)
 router.delete("/:id", deleteCustomer)
 
 module.exports = {

@@ -1,0 +1,29 @@
+<main class="container">
+    <h1>Banco Estado</h1>
+    <p>Administración de clientes y cuentas</p>
+
+    <section class="actions">
+        <button id="btn-load-customers">Ver todos los clientes</button>
+        <button id="btn-load-rut-customers">Ver clientes con cuenta rut</button>
+    </section>
+
+    <section class="form-section">
+        <h2>Crear cliente</h2>
+        <form id="create-customer-form">
+            <input type="text" name="rut" placeholder="RUT" required>
+            <input type="text" name="name" placeholder="Nombre" required>
+            <input type="number" name="age" placeholder="Edad" required>
+            <input type="text" name="phoneNumber" placeholder="Teléfono" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <select name="accountType" required>
+                <option value="">Seleccione tipo de cuenta</option>
+                <option value="cuenta rut">Cuenta RUT</option>
+                <option value="cuenta ahorro">Cuenta ahorro</option>
+            </select>
+            <button type="submit">Crear cliente</button>
+        </form>
+    </section>
+
+
+    <section id="results"></section>
+</main>

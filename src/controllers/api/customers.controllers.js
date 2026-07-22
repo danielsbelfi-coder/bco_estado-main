@@ -7,18 +7,28 @@ const {
 } = require("../../models/account.models")
 
 const getAllCustomers = async (req, res) => {
-    const textData = await fs.readFile(path.join(__dirname, "../../models/customers.json"), { encoding: "utf-8" })
+    const textData = await fs.readFile(
+        path.join(__dirname, "../../models/customers.json"),
+        { encoding: "utf-8" }
+    )
 
     res.json(JSON.parse(textData))
 }
 
 const createCustomer = async (req, res) => {
-    const { rut, name, age, phoneNumber, email, accountType } = req.body
+    const { rut, name, age, phoneNumber, email } = req.body
 
-    if (!rut || !name || !age || !phoneNumber || !email || !accountType) {
+    if (!rut || !name || age === undefined || !phoneNumber || !email) {
         return res.status(400).json({
             ok: false,
             message: "Faltan datos para crear el cliente"
+        })
+    }
+
+    if (isNaN(age) || Number(age) < 0) {
+        return res.status(400).json({
+            ok: false,
+            message: "La edad debe ser un número válido mayor o igual a 0"
         })
     }
 
@@ -35,15 +45,16 @@ const createCustomer = async (req, res) => {
         })
     }
 
-    const newCustomer = new Customer(rut, name, age, phoneNumber, email)
-    const accountResponse = newCustomer.addAccount(accountType)
+    const newCustomer = new Customer(
+        rut,
+        name,
+        Number(age),
+        phoneNumber,
+        email
+    )
 
-    if (newCustomer.accounts.length === 0) {
-        return res.status(400).json({
-            ok: false,
-            message: accountResponse
-        })
-    }
+    newCustomer.addAccount("cuenta rut")
+    newCustomer.addAccount("cuenta ahorro")
 
     const response = await newCustomer.saveCustomer()
 
@@ -56,7 +67,10 @@ const createCustomer = async (req, res) => {
 const findCustomer = async (req, res) => {
     const { id } = req.params
 
-    const textData = await fs.readFile(path.join(__dirname, "../../models/customers.json"), { encoding: "utf-8" })
+    const textData = await fs.readFile(
+        path.join(__dirname, "../../models/customers.json"),
+        { encoding: "utf-8" }
+    )
     const JSONData = JSON.parse(textData)
 
     const customer = JSONData.find(customer => customer.id_customer === id)
@@ -106,8 +120,11 @@ const addAccountToCustomer = async (req, res) => {
             message: "El cliente no se encontró"
         })
     }
+
     if (accountType === "cuenta rut") {
-        const hasRutAccount = customer.accounts.some(account => account.type === "cuenta rut")
+        const hasRutAccount = customer.accounts.some(
+            account => account.type === "cuenta rut"
+        )
 
         if (hasRutAccount) {
             return res.status(400).json({
@@ -119,10 +136,10 @@ const addAccountToCustomer = async (req, res) => {
         const newAccount = new RutAccount("cuenta rut")
         customer.accounts.push(newAccount)
     }
+
     if (accountType === "cuenta ahorro") {
         const newAccount = new SaveAccount("cuenta ahorro")
         customer.accounts.push(newAccount)
-
     }
 
     await fs.writeFile(
@@ -134,7 +151,7 @@ const addAccountToCustomer = async (req, res) => {
     let message = "Cuenta agregada con éxito"
 
     if (accountType === "cuenta rut") {
-        message = "cuenta Rut agregada con éxito"
+        message = "Cuenta rut agregada con éxito"
     }
 
     if (accountType === "cuenta ahorro") {
@@ -146,23 +163,23 @@ const addAccountToCustomer = async (req, res) => {
         message,
         data: customer
     })
-
-
 }
 
 const deleteAccountFromCustomer = async (req, res) => {
-    const { id, id_account } = req.params
+    const { id_customer, id_account } = req.params
 
     const filePath = path.join(__dirname, "../../models/customers.json")
     const textData = await fs.readFile(filePath, { encoding: "utf-8" })
     const customers = JSON.parse(textData)
 
-    const customer = customers.find(customer => customer.id_customer === id)
+    const customer = customers.find(
+        customer => customer.id_customer === id_customer
+    )
 
     if (!customer) {
         return res.status(404).json({
             ok: false,
-            message: "El cliente no se encontró"
+            message: "Cliente no encontrado"
         })
     }
 
@@ -177,15 +194,26 @@ const deleteAccountFromCustomer = async (req, res) => {
         })
     }
 
-    if (customer.accounts.length === 1) {
+    const deletedAccount = customer.accounts[accountIndex]
+
+    if (deletedAccount.type === "cuenta rut") {
         return res.status(400).json({
             ok: false,
-            message: "No se puede eliminar la única cuenta del cliente"
+            message: "No se puede eliminar la cuenta rut del cliente"
         })
     }
 
-    const deletedAccount = customer.accounts[accountIndex]
-    customer.accounts.splice(accountIndex, 1)[accountIndex]
+    const saveAccounts = customer.accounts.filter(
+        account => account.type === "cuenta ahorro"
+    )
+
+    if (deletedAccount.type === "cuenta ahorro" && saveAccounts.length === 1) {
+        return res.status(400).json({
+            ok: false,
+            message: "No se puede eliminar la única cuenta de ahorro del cliente"
+        })
+    }
+
     customer.accounts.splice(accountIndex, 1)
 
     await fs.writeFile(
@@ -194,7 +222,7 @@ const deleteAccountFromCustomer = async (req, res) => {
         { encoding: "utf-8" }
     )
 
-    res.json({
+    return res.json({
         ok: true,
         message: "Cuenta eliminada con éxito",
         data: deletedAccount
