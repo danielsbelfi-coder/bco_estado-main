@@ -76,12 +76,21 @@ const findCustomer = async (req, res) => {
 
 const addAccountToCustomer = async (req, res) => {
     const { id } = req.params
-    const { accountType } = req.body
+    const accountType = req.body.accountType?.trim().toLowerCase()
 
     if (!accountType) {
         return res.status(400).json({
             ok: false,
             message: "Debes indicar el tipo de cuenta"
+        })
+    }
+
+    const validAccountTypes = ["cuenta rut", "cuenta ahorro"]
+
+    if (!validAccountTypes.includes(accountType)) {
+        return res.status(400).json({
+            ok: false,
+            message: "El tipo de cuenta no es válido"
         })
     }
 
@@ -94,7 +103,7 @@ const addAccountToCustomer = async (req, res) => {
     if (!customer) {
         return res.status(404).json({
             ok: false,
-            message: "EL cliente no se encontro"
+            message: "El cliente no se encontró"
         })
     }
     if (accountType === "cuenta rut") {
@@ -115,13 +124,13 @@ const addAccountToCustomer = async (req, res) => {
         customer.accounts.push(newAccount)
 
     }
-    
+
     await fs.writeFile(
         filePath,
         JSON.stringify(customers, null, 4),
         { encoding: "utf-8" }
     )
-    
+
     let message = "Cuenta agregada con éxito"
 
     if (accountType === "cuenta rut") {
@@ -136,12 +145,117 @@ const addAccountToCustomer = async (req, res) => {
         ok: true,
         message,
         data: customer
-})
+    })
+
+
+}
+
+const deleteAccountFromCustomer = async (req, res) => {
+    const { id, id_account } = req.params
+
+    const filePath = path.join(__dirname, "../../models/customers.json")
+    const textData = await fs.readFile(filePath, { encoding: "utf-8" })
+    const customers = JSON.parse(textData)
+
+    const customer = customers.find(customer => customer.id_customer === id)
+
+    if (!customer) {
+        return res.status(404).json({
+            ok: false,
+            message: "El cliente no se encontró"
+        })
+    }
+
+    const accountIndex = customer.accounts.findIndex(
+        account => account.id_account === id_account
+    )
+
+    if (accountIndex === -1) {
+        return res.status(404).json({
+            ok: false,
+            message: "La cuenta no se encontró"
+        })
+    }
+
+    if (customer.accounts.length === 1) {
+        return res.status(400).json({
+            ok: false,
+            message: "No se puede eliminar la única cuenta del cliente"
+        })
+    }
+
+    const deletedAccount = customer.accounts[accountIndex]
+    customer.accounts.splice(accountIndex, 1)[accountIndex]
+    customer.accounts.splice(accountIndex, 1)
+
+    await fs.writeFile(
+        filePath,
+        JSON.stringify(customers, null, 4),
+        { encoding: "utf-8" }
+    )
+
+    res.json({
+        ok: true,
+        message: "Cuenta eliminada con éxito",
+        data: deletedAccount
+    })
+}
+
+const deleteCustomer = async (req, res) => {
+    const { id } = req.params
+
+    const filePath = path.join(__dirname, "../../models/customers.json")
+    const textData = await fs.readFile(filePath, { encoding: "utf-8" })
+    const customers = JSON.parse(textData)
+
+    const customerIndex = customers.findIndex(
+        customer => customer.id_customer === id
+    )
+
+    if (customerIndex === -1) {
+        return res.status(404).json({
+            ok: false,
+            message: "El cliente no se encontró"
+        })
+    }
+
+    const deletedCustomer = customers[customerIndex]
+    customers.splice(customerIndex, 1)
+
+    await fs.writeFile(
+        filePath,
+        JSON.stringify(customers, null, 4),
+        { encoding: "utf-8" }
+    )
+
+    res.json({
+        ok: true,
+        message: "Cliente eliminado con éxito",
+        data: deletedCustomer
+    })
+}
+
+const getCustomersWithRutAccount = async (req, res) => {
+    const filePath = path.join(__dirname, "../../models/customers.json")
+    const textData = await fs.readFile(filePath, { encoding: "utf-8" })
+    const customers = JSON.parse(textData)
+
+    const customersWithRutAccount = customers.filter(customer =>
+        customer.accounts.some(account => account.type === "cuenta rut")
+    )
+
+    res.json({
+        ok: true,
+        data: customersWithRutAccount
+    })
 }
 
 module.exports = {
     getAllCustomers,
     createCustomer,
     findCustomer,
-    addAccountToCustomer
+    addAccountToCustomer,
+    deleteAccountFromCustomer,
+    deleteCustomer,
+    getCustomersWithRutAccount
 }
